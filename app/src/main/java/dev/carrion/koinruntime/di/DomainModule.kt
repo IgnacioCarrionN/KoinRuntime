@@ -1,7 +1,9 @@
 package dev.carrion.koinruntime.di
 
 import dev.carrion.koinruntime.domain.GetGreetingUseCase
-import dev.carrion.koinruntime.domain.GreetingRepository
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.module
 
-fun provideGetGreetingUseCase(greetingRepository: GreetingRepository) =
-    GetGreetingUseCase(greetingRepository)
+val domainModule = module {
+    factoryOf(::GetGreetingUseCase)
+}

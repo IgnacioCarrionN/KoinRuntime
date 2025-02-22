@@ -5,11 +5,12 @@ import dev.carrion.koinruntime.data.GreetingDataSource
 import dev.carrion.koinruntime.data.local.LocalGreetingDataSource
 import dev.carrion.koinruntime.data.local.provideLocalGreet
 import dev.carrion.koinruntime.domain.GreetingRepository
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-fun provideLocalGreetingProvider(): () -> String = ::provideLocalGreet
-
-fun provideGreetingDataSource(localGreetingProvider: () -> String): GreetingDataSource =
-    LocalGreetingDataSource(localGreetingProvider)
-
-fun provideGreetingRepository(greetingDataSource: GreetingDataSource): GreetingRepository =
-    DefaultGreetingRepository(greetingDataSource)
+val dataModule = module {
+    single<() -> String> { ::provideLocalGreet }
+    singleOf(::LocalGreetingDataSource) bind GreetingDataSource::class
+    singleOf(::DefaultGreetingRepository) bind GreetingRepository::class
+}

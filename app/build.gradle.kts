@@ -50,11 +50,37 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.viewmodel.compose.android)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.compose)
+
     testImplementation(libs.junit)
+    testImplementation(libs.koin.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+tasks.register<Test>("runModuleCheckTest") {
+    group = "verification"
+    description = "Runs only the ModuleCheck test"
+
+    val testTask = tasks.named<Test>("testDebugUnitTest").get()
+    testClassesDirs = testTask.testClassesDirs
+    classpath = testTask.classpath
+
+    filter {
+        includeTestsMatching("dev.carrion.koinruntime.ModuleCheck")
+    }
+
+    doLast {
+       executeTests()
+    }
+}
+
+tasks.matching { it.name.startsWith("assemble") }.configureEach {
+    dependsOn("runModuleCheckTest")
 }
