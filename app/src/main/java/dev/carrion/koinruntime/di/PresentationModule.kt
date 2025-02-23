@@ -1,31 +1,13 @@
 package dev.carrion.koinruntime.di
 
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import dev.carrion.koinruntime.domain.GetGreetingUseCase
 import dev.carrion.koinruntime.presentation.home.HomeViewModel
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Module
 
-fun provideViewModelFactory(useCase: GetGreetingUseCase): ViewModelProvider.Factory =
-    viewModelFactory {
-        initializer {
-            HomeViewModel(useCase)
-        }
-    }
-
-fun provideViewModel(viewModelStoreOwner: ViewModelStoreOwner): HomeViewModel =
-    ViewModelProvider.create(
-        owner = viewModelStoreOwner,
-        factory = provideViewModelFactory(
-            provideGetGreetingUseCase(
-                provideGreetingRepository(
-                    provideGreetingDataSource(
-                        provideLocalGreetingProvider()
-                    )
-                )
-            )
-        ),
-        extras = CreationExtras.Empty
-    )[HomeViewModel::class]
+@Module
+class PresentationModule {
+    @KoinViewModel
+    fun provideHomeViewModel(getGreetingUseCase: GetGreetingUseCase): HomeViewModel =
+        HomeViewModel(getGreetingUseCase)
+}

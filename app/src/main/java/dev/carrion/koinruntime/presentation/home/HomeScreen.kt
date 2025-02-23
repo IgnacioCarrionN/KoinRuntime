@@ -21,14 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import dev.carrion.koinruntime.di.provideViewModel
 import dev.carrion.koinruntime.presentation.ui.theme.KoinRuntimeTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = provideViewModel(LocalViewModelStoreOwner.current!!),
+    viewModel: HomeViewModel = koinViewModel(),
 ) {
     val state by viewModel.homeState.collectAsStateWithLifecycle()
 
