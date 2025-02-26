@@ -19,6 +19,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.carrion.koinruntime.presentation.ui.theme.KoinRuntimeTheme
@@ -30,7 +32,17 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val state by viewModel.homeState.collectAsStateWithLifecycle()
+    Home(
+        state = state,
+        onHomeIntent = viewModel::sendIntent
+    )
+}
 
+@Composable
+fun Home(
+    state: HomeState,
+    onHomeIntent: (HomeIntent) -> Unit,
+) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -42,7 +54,7 @@ fun HomeScreen(
                     actionLabel = "Retry"
                 )
                 if (snackbarResult == SnackbarResult.ActionPerformed) {
-                    viewModel.sendIntent(HomeIntent.GetGreeting)
+                    onHomeIntent(HomeIntent.GetGreeting)
                 }
             }
         } else {
@@ -68,7 +80,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(innerPadding)
                 )
                 Button(onClick = {
-                    viewModel.sendIntent(HomeIntent.GetGreeting)
+                    onHomeIntent(HomeIntent.GetGreeting)
                 }) {
                     Text(text = "Get Greeting")
                 }
@@ -82,8 +94,22 @@ fun HomeScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun HomeScreenPreview(
+    @PreviewParameter(HomeStateProvider::class) state: HomeState
+) {
     KoinRuntimeTheme {
-        HomeScreen()
+        Home(
+            state = state
+        ) {
+            // NO-OP
+        }
     }
+}
+
+class HomeStateProvider : PreviewParameterProvider<HomeState> {
+    override val values = sequenceOf(
+        HomeState(false, "Hello Android dev Perú", null),
+        HomeState(true, "Hello Android dev Perú", null),
+        HomeState(false, "Hello Android dev Perú", "Something went wrong")
+    )
 }
